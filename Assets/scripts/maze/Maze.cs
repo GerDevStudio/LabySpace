@@ -24,18 +24,23 @@ public class Maze : MonoBehaviour
 
 	private MazeCell[,] cells;
 
-	public void Generate (IntVector2 size, Action<int> onGenerationFinished)
+	private int stars;
+
+	public void Generate (IntVector2 size, Action<int,int> onGenerationFinished)
 	{
 		this.mazeSize = size;
+		int steps = 1;
+		stars = 0;
+
 		cells = new MazeCell[size.x, size.z];
+
 		List<MazeCell> activeCells = new List<MazeCell> ();
 		DoFirstGenerationStep (activeCells);
-		int steps = 1;
 		while (activeCells.Count > 0) {
 			DoNextGenerationStep (activeCells);
 			steps++;
 		}
-		onGenerationFinished (steps);
+		onGenerationFinished (steps,stars);
 	}
 
 	private void DoFirstGenerationStep (List<MazeCell> activeCells)
@@ -136,8 +141,11 @@ public class Maze : MonoBehaviour
 	{
 		IntVector2 coordinates = cell.coordinates;
 		Bonus bonus = Bonus.BonusFactory.newBonus (cell, bonusRates, bombBonusPrefab, ovalBonusPrefab, ghostBonusPrefab, starBonusPrefab);
-		bonus.name = (bonus is BombBonus) ? "BombBonus" : "OvalBonus " + coordinates.x + ", " + coordinates.z;
+		bonus.name = bonus.name + coordinates.x + ", " + coordinates.z;
 		bonus.transform.localPosition += 0.1f * Vector3.up;
+
+		if (bonus is StarBonus)
+			stars++;
 
 		// put in a random corner
 		MazeDirection direction = (MazeDirection)UnityEngine.Random.Range (0, 4);

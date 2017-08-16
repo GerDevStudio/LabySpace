@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GhostEffect : MonoBehaviour
 {	
-	private const float DURATION = 3f;
+	private const float DURATION = 2.2f;
 
 	private Ball ball;
 	List<MazeCellEdge> touchedEdges;

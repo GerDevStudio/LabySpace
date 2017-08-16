@@ -18,7 +18,22 @@ public class GameManager : MonoBehaviour
 	private Maze mazeInstance;
 	private MainUI mainUIInstance;
 
-	public int StarsTaken { get; internal set;}
+	private int starsTaken;
+	private int starsMax;
+
+	public int GetStarsTaken()
+	{
+		return starsTaken;
+	}
+
+	public void SetStarsTaken(int stars)
+	{
+		starsTaken = stars;
+		ScoreBar scoreBar = mainUIInstance.scoreBarComponent.GetComponent<ScoreBar>();
+		if (scoreBar != null) {
+			scoreBar.Add (stars);
+		}
+	}
 
 	public int level = 1;
 
@@ -67,13 +82,14 @@ public class GameManager : MonoBehaviour
 		mazeInstance = Instantiate (mazePrefab) as Maze;
 		IntVector2 size = GetMazeSizeForNextLevel (level, mazeInstance.mazeSize);
 		mazeInstance.Generate (size, onGenerationFinished);
-		StarsTaken = 0;
+		SetStarsTaken (0);
 	}
 
 	public void OnBonusTaken(Bonus bonus)
 	{
 		if (bonus is StarBonus) {
-			StarsTaken++;
+			starsTaken += 1;
+			SetStarsTaken (starsTaken);
 		}
 	}
 
@@ -105,10 +121,14 @@ public class GameManager : MonoBehaviour
 		return new IntVector2 (x, z);
 	}
 
-	private void onGenerationFinished (int steps)
+	private void onGenerationFinished (int steps, int stars)
 	{
+		this.starsMax = stars;
+
 		Debug.Log ("Generation finished in " + steps + " steps");
 		PopBall ();
+
+		mainUIInstance.initScoreBar (steps,stars);
 	}
 
 	public void LevelFinished ()
