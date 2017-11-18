@@ -10,7 +10,6 @@ Random level generation
  * Accelerometer based game
  * Tested on Android only
  * Take bonuses
- * 
 
 ### Done with:
 
